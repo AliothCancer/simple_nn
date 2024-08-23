@@ -24,6 +24,29 @@ impl Node {
         let weighted_sum = self.weights.dot(&input) + self.bias;
         weighted_sum
     }
+
+    // Funzione di attivazione sigmoid
+    fn sigmoid(x: f64) -> f64 {
+        1.0 / (1.0 + f64::exp(-x))
+    }
+
+    // Derivata della funzione sigmoid
+    fn sigmoid_derivative(x: f64) -> f64 {
+        let sigmoid_x = Self::sigmoid(x);
+        sigmoid_x * (1.0 - sigmoid_x)
+    }
+    fn train(&mut self, inputs: Array1<f64>, target: f64) {
+        let weighted_sum = self.weights.dot(&inputs) + self.bias;
+        let predicted = Self::sigmoid(weighted_sum);
+
+        let error = target - predicted;
+        let gradient = Self::sigmoid_derivative(weighted_sum) * error;
+
+        for (i, weight) in self.weights.iter_mut().enumerate() {
+            *weight += self.learning_rate * gradient * inputs[i];
+        }
+        self.bias += self.learning_rate * gradient;
+    }
 }
 
 // Test
@@ -40,10 +63,10 @@ mod tests {
         node.bias = 0.1;
 
         let inputs = Array1::from_vec(vec![1.0, 2.0, 3.0]);
-        let output = node.predict(inputs);
+        let predicted = node.predict(inputs);
 
         // Calcolo manuale dell'output atteso: (0.5*1.0) + (-0.2*2.0) + (0.3*3.0) + 0.1
         let expected_output = (0.5 * 1.0) + (-0.2 * 2.0) + (0.3 * 3.0) + 0.1;
-        assert!((output - expected_output).abs() < 1e-6, "Expected {} but got {}", expected_output, output);
+        assert!((predicted - expected_output).abs() < 1e-6, "Expected {} but got {}", expected_output, predicted);
     }
 }
