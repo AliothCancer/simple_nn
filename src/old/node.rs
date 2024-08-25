@@ -31,11 +31,11 @@ impl Node {
     }
 
     // Derivata della funzione sigmoid
-    fn sigmoid_derivative(x: f64) -> f64 {
+    pub fn sigmoid_derivative(x: f64) -> f64 {
         let sigmoid_x = Self::sigmoid(x);
         sigmoid_x * (1.0 - sigmoid_x)
     }
-    fn train(&mut self, inputs: Array1<f64>, target: f64) {
+    pub fn train(&mut self, inputs: Array1<f64>, target: f64) {
         let weighted_sum = self.weights.dot(&inputs) + self.bias;
         let predicted = Self::sigmoid(weighted_sum);
 
